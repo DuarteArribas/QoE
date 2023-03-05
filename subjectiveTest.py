@@ -45,72 +45,50 @@ def createButtons():
   b2Pos = (buttonWidth    ,bY)
   b3Pos = (buttonWidth * 2,bY)
   b4Pos = (buttonWidth * 3,bY)
-  b5Pos = (buttonWidth * 4,bY)  
+  b5Pos = (buttonWidth * 4,bY)
 
 def updateImage(img):
   image = pygame.image.load(f"images/{img}")
   image = pygame.transform.scale(image,(SCREEN_WIDTH,SCREEN_HEIGHT))
   return image
 
-def loop():
-  # Run the game loop
+def loop(screen,img):
   while True:
-    # Handle events
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
+      if event.type == pygame.QUIT: #or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+        print("Test not saved!")
+        pygame.quit()
+        exit()
             
-    # Draw the image
-    screen.blit(image, (0, 0))
-    
-    # Draw the buttons
-    mouse_pos = pygame.mouse.get_pos()
-    if button1_pos[0] < mouse_pos[0] < button1_pos[0] + button_width and button1_pos[1] < mouse_pos[1] < button1_pos[1] + button_height:
-        pygame.draw.rect(screen, hover_color, pygame.Rect(button1_pos, (button_width, button_height)))
-    else:
-        pygame.draw.rect(screen, button_color, pygame.Rect(button1_pos, (button_width, button_height)))
-    screen.blit(button1, button1_pos)
-    
-    if button2_pos[0] < mouse_pos[0] < button2_pos[0] + button_width and button2_pos[1] < mouse_pos[1] < button2_pos[1] + button_height:
-        pygame.draw.rect(screen, hover_color, pygame.Rect(button2_pos, (button_width, button_height)))
-    else:
-        pygame.draw.rect(screen, button_color, pygame.Rect(button2_pos, (button_width, button_height)))
-    screen.blit(button2, button2_pos)
-    
-    if button3_pos[0] < mouse_pos[0] < button3_pos[0] + button_width and button3_pos[1] < mouse_pos[1] < button3_pos[1] + button_height:
-        pygame.draw.rect(screen, hover_color, pygame.Rect(button3_pos, (button_width, button_height)))
-    else:
-        pygame.draw.rect(screen, button_color, pygame.Rect(button3_pos, (button_width, button_height)))
-    screen.blit(button3, button3_pos)
-    
-def a():
-  # Define the colors of the buttons
-  button_color = (255, 255, 255)
-  hover_color = (200, 200, 200)
+    screen.blit(img,(0,0))
+    pygame.display.flip()
+    pygame.time.delay(1000)
 
-  # Define the font and size of the text on the buttons
-  font = pygame.font.Font(None, 30)
-
-  # Create the buttons
-  button1 = font.render("Button 1", True, button_color)
-  button2 = font.render("Button 2", True, button_color)
-  button3 = font.render("Button 3", True, button_color)
-  button4 = font.render("Button 4", True, button_color)
-  button5 = font.render("Button 5", True, button_color)
-
-  # Set the position of the buttons
-  button_width = screen_width // 5
-  button_height = 50
-  button1_pos = (0, screen_height - button_height)
-  button2_pos = (button_width, screen_height - button_height)
-  button3_pos = (button_width * 2, screen_height - button_height)
-  button4_pos = (button_width * 3, screen_height - button_height)
-  button5_pos = (button_width * 4, screen_height - button_height)
+    #
+    ## Draw the buttons
+    #mouse_pos = pygame.mouse.get_pos()
+    #if button1_pos[0] < mouse_pos[0] < button1_pos[0] + button_width and button1_pos[1] < mouse_pos[1] < button1_pos[1] + button_height:
+    #    pygame.draw.rect(screen, hover_color, pygame.Rect(button1_pos, (button_width, button_height)))
+    #else:
+    #    pygame.draw.rect(screen, button_color, pygame.Rect(button1_pos, (button_width, button_height)))
+    #screen.blit(button1, button1_pos)
+    #
+    #if button2_pos[0] < mouse_pos[0] < button2_pos[0] + button_width and button2_pos[1] < mouse_pos[1] < button2_pos[1] + button_height:
+    #    pygame.draw.rect(screen, hover_color, pygame.Rect(button2_pos, (button_width, button_height)))
+    #else:
+    #    pygame.draw.rect(screen, button_color, pygame.Rect(button2_pos, (button_width, button_height)))
+    #screen.blit(button2, button2_pos)
+    #
+    #if button3_pos[0] < mouse_pos[0] < button3_pos[0] + button_width and button3_pos[1] < mouse_pos[1] < button3_pos[1] + button_height:
+    #    pygame.draw.rect(screen, hover_color, pygame.Rect(button3_pos, (button_width, button_height)))
+    #else:
+    #    pygame.draw.rect(screen, button_color, pygame.Rect(button3_pos, (button_width, button_height)))
+    #screen.blit(button3, button3_pos)
     
 def main():
-  screen = init()
-  loop()
+  screen     = init()
+  initialImg = updateImage("1.png") 
+  loop(screen,initialImg)
   
 if __name__ == "__main__":
   main()
