@@ -26,6 +26,11 @@ def init():
   pygame.display.set_caption("Subjective test")
   return pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.FULLSCREEN)
 
+def updateImage(img):
+  image = pygame.image.load(f"images/{img}")
+  image = pygame.transform.scale(image,(SCREEN_WIDTH,SCREEN_HEIGHT))
+  return image
+
 def loop():
   # Run the game loop
   while True:
