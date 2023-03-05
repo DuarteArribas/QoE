@@ -20,6 +20,16 @@ CODED_IMAGES_JPG2000     = {
   "5" : ["5-1.jpg2000","5-2.jpg2000","5-3.jpg2000","5-4.jpg2000"]
 }
 
+MAPPER_REFERENCE = {
+  "jpg"     : REFERENCE_IMAGES_JPG,
+  "jpg2000" : REFERENCE_IMAGES_JPG2000,
+}
+
+MAPPER_CODED = {
+  "jpg"     : CODED_IMAGES_JPG,
+  "jpg2000" : CODED_IMAGES_JPG2000,
+}
+
 SCREEN_WIDTH            = 1920
 SCREEN_HEIGHT           = 1080
 NUM_OF_BUTTONS          = 5
@@ -105,22 +115,21 @@ def getColorFromState(state):
     return BUTTON_ACTIVE_COLOR
 
 def chooseNext(previousImage,codec):
-  if codec == "jpg":
-    if not previousImage:
-      return random.choice(REFERENCE_IMAGES_JPG)
-    imgNum = previousImage[0]
-    if "ref" in previousImage:
-      newImg = random.choice(CODED_IMAGES_JPG[imgNum])
-      CODED_IMAGES_JPG[imgNum].pop(CODED_IMAGES_JPG[imgNum].index(newImg))
-      if len(CODED_IMAGES_JPG[imgNum]) == 0:
-        REFERENCE_IMAGES_JPG.pop(REFERENCE_IMAGES_JPG.index(f"{imgNum}ref.jpg"))  
-    else:
-      maxLength    = max([len(value) for value in CODED_IMAGES_JPG.values()])
-      newReference = [reference for reference in REFERENCE_IMAGES_JPG if len(CODED_IMAGES_JPG[reference[0]]) == maxLength]
+  if not previousImage:
+    return random.choice(MAPPER_REFERENCE[codec])
+  imgNum = previousImage[0]
+  if "ref" in previousImage:
+    newImg = random.choice(MAPPER_CODED[codec][imgNum])
+    MAPPER_CODED[codec][imgNum].pop(MAPPER_CODED[codec][imgNum].index(newImg))
+    if len(MAPPER_CODED[codec][imgNum]) == 0:
+      MAPPER_REFERENCE[codec].pop(MAPPER_REFERENCE[codec].index(f"{imgNum}ref.jpg"))  
+  else:
+    maxLength    = max([len(value) for value in MAPPER_CODED[codec].values()])
+    newReference = [reference for reference in MAPPER_REFERENCE[codec] if len(MAPPER_CODED[codec][reference[0]]) == maxLength]
+    newImg = random.choice(newReference)
+    while newImg[0] == imgNum:
       newImg = random.choice(newReference)
-      while newImg[0] == imgNum:
-        newImg = random.choice(newReference)
-    return newImg
+  return newImg
 
 def updateResults(previousImage,score,meanRefs):
   if not "ref" in previousImage:
