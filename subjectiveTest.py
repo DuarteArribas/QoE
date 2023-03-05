@@ -1,7 +1,10 @@
 import pygame
 import random
 import enum
+import os
 import pandas as pd
+
+AVAILABLE_CODECS = ["jpg","jpg2000"]
 
 REFERENCE_IMAGES_JPG     = ["1ref.jpg","2ref.jpg","3ref.jpg","4ref.jpg","5ref.jpg"]
 CODED_IMAGES_JPG         = {
@@ -11,6 +14,7 @@ CODED_IMAGES_JPG         = {
   "4" : ["4-1.jpg","4-2.jpg","4-3.jpg","4-4.jpg"],
   "5" : ["5-1.jpg","5-2.jpg","5-3.jpg","5-4.jpg"]
 }
+
 REFERENCE_IMAGES_JPG2000 = ["1ref.jpg2000","2ref.jpg2000","3ref.jpg2000","4ref.jpg2000","5ref.jpg2000"]
 CODED_IMAGES_JPG2000     = {
   "1" : ["1-1.jpg2000","1-2.jpg2000","1-3.jpg2000","1-4.jpg2000"],
@@ -75,7 +79,7 @@ def updateImage(img):
   image = pygame.transform.scale(image,(SCREEN_WIDTH,SCREEN_HEIGHT))
   return (image,img)
 
-def loop(screen,img,name,buttons,codec,meanRefs):
+def loop(screen,img,name,buttons,codec,meanRefs,userID):
   while True:
     for event in pygame.event.get():
       if event.type == pygame.QUIT: #or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -95,7 +99,7 @@ def loop(screen,img,name,buttons,codec,meanRefs):
           if pos[0] < event.pos[0] < pos[0] + BUTTON_WIDTH and pos[1] < event.pos[1] < pos[1] + BUTTON_HEIGHT:
             button[2] = BUTTON_STATES.ACTIVE
             updateResults(name,count + 1,meanRefs)
-            checkResults(codec,meanRefs)
+            checkResults(codec,meanRefs,userID)
             img,name = updateImage(chooseNext(name,codec))
           else:
             button[2] = BUTTON_STATES.IDLE
@@ -137,23 +141,28 @@ def updateResults(previousImage,score,meanRefs):
   else:
     meanRefs[int(previousImage[0]) - 1] += score
     
-def checkResults(codec,meanRefs):
+def checkResults(codec,meanRefs,userID):
   maxLength = max([len(value) for value in CODED_IMAGES_JPG.values()])
   if maxLength == 0:
     meanRefs = [ref / 4 for ref in meanRefs]
     for i in range(1,6):
       results[f"Image {i}"]["Refs"] = meanRefs[i - 1]
-    results.to_csv(f"results/{codec}Results.csv")
+    if not os.path.exists(f"results/{userID}"):
+      os.makedirs(f"results/{userID}")
+    results.to_csv(f"results/{userID}/{codec}Results.csv")
     pygame.quit()
     exit()
     
 def main():
-  codec = "jpg"
+  userID = input(f"What is your id?")
+  codec  = input(f"Please choose the codec: {[codec for codec in AVAILABLE_CODECS]}")
+  while codec not in AVAILABLE_CODECS:
+    codec = input(f"Please choose the codec: {[codec for codec in AVAILABLE_CODECS]}")
   screen          = init()
   initialImg,name = updateImage(chooseNext(None,codec))
   buttons         = createButtons()
   meanRefs = [0,0,0,0,0]
-  loop(screen,initialImg,name,buttons,codec,meanRefs)
+  loop(screen,initialImg,name,buttons,codec,meanRefs,userID)
   
 if __name__ == "__main__":
   main()
