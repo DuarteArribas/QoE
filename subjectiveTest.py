@@ -1,7 +1,7 @@
 import pygame
 import random
 import enum
-import pandas
+import pandas as pd
 
 REFERENCE_IMAGES_JPG     = ["1ref.jpg","2ref.jpg","3ref.jpg","4ref.jpg","5ref.jpg"]
 CODED_IMAGES_JPG         = {
@@ -22,7 +22,6 @@ CODED_IMAGES_JPG2000     = {
 
 SCREEN_WIDTH            = 1920
 SCREEN_HEIGHT           = 1080
-NUM_IMGS                = 20
 NUM_OF_BUTTONS          = 5
 BUTTON_COLOR            = (255,255,255)
 BUTTON_HOVER_COLOR      = (100,100,100)
@@ -35,7 +34,7 @@ class BUTTON_STATES(enum.Enum):
   HOVER  = 1
   ACTIVE = 2
   
-results = pd.DataFrame(index = ["1","2","3","4"],columns = ["Image 1","Image 2","Image 3","Image 4","Image 5"])
+results = pd.DataFrame(index = ["1","2","3","4","Refs"],columns = ["Image 1","Image 2","Image 3","Image 4","Image 5"])
 
 def init():
   pygame.init()
@@ -66,9 +65,8 @@ def updateImage(img):
   image = pygame.transform.scale(image,(SCREEN_WIDTH,SCREEN_HEIGHT))
   return (image,img)
 
-def loop(screen,img,name,buttons,codec):
+def loop(screen,img,name,buttons,codec,meanRefs):
   while True:
-    checkResults(codec)
     for event in pygame.event.get():
       if event.type == pygame.QUIT: #or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
         print("Test not saved!")
@@ -86,8 +84,9 @@ def loop(screen,img,name,buttons,codec):
           pos,text,buttonState = button
           if pos[0] < event.pos[0] < pos[0] + BUTTON_WIDTH and pos[1] < event.pos[1] < pos[1] + BUTTON_HEIGHT:
             button[2] = BUTTON_STATES.ACTIVE
+            updateResults(name,count + 1,meanRefs)
+            checkResults(codec,meanRefs)
             img,name = updateImage(chooseNext(name,codec))
-            updateResults(previousImage,count + 1)
           else:
             button[2] = BUTTON_STATES.IDLE
     screen.blit(img,(0,0))
@@ -113,27 +112,39 @@ def chooseNext(previousImage,codec):
     if "ref" in previousImage:
       newImg = random.choice(CODED_IMAGES_JPG[imgNum])
       CODED_IMAGES_JPG[imgNum].pop(CODED_IMAGES_JPG[imgNum].index(newImg))
+      if len(CODED_IMAGES_JPG[imgNum]) == 0:
+        REFERENCE_IMAGES_JPG.pop(REFERENCE_IMAGES_JPG.index(f"{imgNum}ref.jpg"))  
     else:
-      newImg = random.choice(REFERENCE_IMAGES_JPG)
+      maxLength    = max([len(value) for value in CODED_IMAGES_JPG.values()])
+      newReference = [reference for reference in REFERENCE_IMAGES_JPG if len(CODED_IMAGES_JPG[reference[0]]) == maxLength]
+      newImg = random.choice(newReference)
       while newImg[0] == imgNum:
-        newImg = random.choice(REFERENCE_IMAGES_JPG)
+        newImg = random.choice(newReference)
     return newImg
 
-def updateResults(previousImage,score):
+def updateResults(previousImage,score,meanRefs):
   if not "ref" in previousImage:
     results[f"Image {previousImage[0]}"][previousImage[2]] = score
-  NUM_IMGS -= 1
+  else:
+    meanRefs[int(previousImage[0]) - 1] += score
     
-def checkResults(codec):
-  if NUM_IMGS <= 0:
+def checkResults(codec,meanRefs):
+  maxLength = max([len(value) for value in CODED_IMAGES_JPG.values()])
+  if maxLength == 0:
+    meanRefs = [ref / 4 for ref in meanRefs]
+    for i in range(1,6):
+      results[f"Image {i}"]["Refs"] = meanRefs[i - 1]
     results.to_csv(f"results/{codec}Results.csv")
-  
+    pygame.quit()
+    exit()
+    
 def main():
   codec = "jpg"
   screen          = init()
   initialImg,name = updateImage(chooseNext(None,codec))
   buttons         = createButtons()
-  loop(screen,initialImg,name,buttons,codec)
+  meanRefs = [0,0,0,0,0]
+  loop(screen,initialImg,name,buttons,codec,meanRefs)
   
 if __name__ == "__main__":
   main()
