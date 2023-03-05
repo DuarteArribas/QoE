@@ -86,8 +86,7 @@ def loop(screen,img,buttons):
             button[2] = BUTTON_STATES.IDLE
           
             
-    #screen.blit(img,(0,0))
-    #pygame.display.flip()
+    screen.blit(img,(0,0))
     #pygame.time.delay(1000)
     for button in buttons:
       pos,text,buttonState = button
@@ -102,13 +101,12 @@ def getColorFromState(state):
   elif state == BUTTON_STATES.HOVER:
     return BUTTON_HOVER_COLOR
   else:
-    return BUTTON_ACTIVE_COLOR  
+    return BUTTON_ACTIVE_COLOR
     
 def main():
   screen     = init()
   initialImg = updateImage("1.png")
   buttons    = createButtons()
-  print(buttons)
   loop(screen,initialImg,buttons)
   
 if __name__ == "__main__":
