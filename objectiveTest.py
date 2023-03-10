@@ -1,0 +1,8 @@
+'''
+TODO:
+PSNR/MSR
+
+SSIM
+
+VIFp/VIF
+'''
