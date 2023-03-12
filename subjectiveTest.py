@@ -6,7 +6,7 @@ import pandas as pd
 from screeninfo import get_monitors
 from enum import Enum
 
-AVAILABLE_CODECS     = ["jpg","jpg2000"]
+AVAILABLE_CODECS     = ["jpg","jpg2000","av1"]
 IMAGES_DIR           = "images"
 REFERENCE_IMAGES_DIR = "References"
 CODED_DIRS           = {
@@ -167,7 +167,7 @@ def loop(screen,img,name,buttons,codec,userID,gameState,refImgs,codedImgs,prevCo
         elif event.type == pygame.MOUSEBUTTONDOWN:
           pos,text,buttonState = buttons[5]
           if pos[0] < event.pos[0] < pos[0] + BUTTON_WIDTH and pos[1] < event.pos[1] < pos[1] + BUTTON_HEIGHT:
-            buttons[2][2] = ButtonStates.Active
+            buttons[5][2] = ButtonStates.Active
             if prevCoded:
               gameState = GameState.Coded
             else:
@@ -176,7 +176,7 @@ def loop(screen,img,name,buttons,codec,userID,gameState,refImgs,codedImgs,prevCo
             img,name = updateImage(chooseNext(name,refImgs,codedImgs,isRef))
             isRef = not isRef
           else:
-            buttons[2][2] = ButtonStates.Idle
+            buttons[5][2] = ButtonStates.Idle
       pos,text,buttonState = buttons[5]
       pygame.draw.rect(screen,getColorFromState(buttonState),(pos[0],pos[1],BUTTON_WIDTH,BUTTON_HEIGHT))
       screen.blit(text,pos)
