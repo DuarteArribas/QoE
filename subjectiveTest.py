@@ -84,7 +84,7 @@ def getCodedImgs(numOfImgs,codec):
   codedImgs = {}
   for i in range(numOfImgs):
     codedImgs[keys[i]] = [f"{values[j]}/{i + 1}.{CODEC_EXTENSION_MAP[codec]}" for j in range(4)]
-    codedImgs[keys[i]].append(f"{IMAGES_DIR}/{REFERENCE_IMAGES_DIR}/{i + 1}.{CODEC_EXTENSION_MAP[codec]}")
+    codedImgs[keys[i]].append(f"{IMAGES_DIR}/{REFERENCE_IMAGES_DIR}/{i + 1}.png")
   return codedImgs
   
 def init(id):
