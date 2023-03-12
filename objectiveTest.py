@@ -1,11 +1,3 @@
-'''
-TODO:
-PSNR/MSR
-
-SSIM
-
-VIFp/VIF
-'''
 # Imports
 import cv2
 import numpy as np
@@ -18,27 +10,6 @@ from tqdm import tqdm
 SCORES_DIR = {}
 CODEC_LIST = {'JPG':'jpg', 'JPG2000':'jp2', 'AV1':'png'} # Name followed by extension
 BITRATE_LIST = ['bitrate-1', 'bitrate-2', 'bitrate-3', 'bitrate-4']
-
-
-# reference_img = cv2.imread('images/1.png')
-# encoded_img = cv2.imread('images/1_coded.png')
-
-# # PSNR
-# psnr_score = cv2.PSNR(reference_img, encoded_img)
-# print("PSNR score: ", psnr_score)
-# psnr_score = PSNR1(reference_img, encoded_img)
-# print("PSNR score: ", psnr_score)
-
-# # SSIM
-# reference_gray = cv2.cvtColor(reference_img, cv2.COLOR_BGR2GRAY)
-# encoded_gray = cv2.cvtColor(encoded_img, cv2.COLOR_BGR2GRAY)
-# ssim_score, _ = SSIM(reference_gray, encoded_gray, full=True)
-# # ssim_score = ssim(encoded_img, reference_img)
-# print("SSIM score: ", ssim_score)
-
-# # VIFp
-# vifp_score = vifp(encoded_img, reference_img)
-# print("VIF score: ", vifp_score)
 
 def initialize_dict():
     empty_dataframe = pd.DataFrame(index = ["bitrate-1", "bitrate-2", "bitrate-3", "bitrate-4"],columns = ["Image 1","Image 2","Image 3","Image 4","Image 5"])
