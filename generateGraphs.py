@@ -40,15 +40,11 @@ if __name__ == '__main__':
         # Each csv represents a codec
         df_list = [pd.read_csv(f'objective_results/{metric}/{codec}', index_col=0) for codec in codecs_dir]
 
-        # This results_list will be ordered by image, and then, the codecs for each image will be ordered alphabetically, after that the bitrates are ordered [1,...,n]
-        result_list = []
         # For each image
         for i in tqdm(range(len(df_list[0].columns)), desc='Images', leave=False):
-            result_list.append([])
             image_results = []
             # For each codec
             for codec_df in df_list:
-                result_list[i].append(list(codec_df[f'Image {i+1}'])) # The bitrates are ordered as [bitrate-1, .., bitrate-n] automatically
                 image_results.append(list(codec_df[f'Image {i+1}'])) # This list contains the bitrates values for each codec
             
             create_graph(f'graphs/{metric}/Image{i + 1}.png', image_results)   
