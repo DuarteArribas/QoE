@@ -140,18 +140,22 @@ def createButtons():
   bNextPos = (BUTTON_WIDTH * 3.5,bYNext)
   return [[b1Pos,b1,ButtonStates.Idle],[b2Pos,b2,ButtonStates.Idle],[b3Pos,b3,ButtonStates.Idle],[b4Pos,b4,ButtonStates.Idle],[b5Pos,b5,ButtonStates.Idle],[bNextPos,bNext,ButtonStates.Idle]]
 
-def loop(screen,img,name,buttons,codec,userID,gameState,refImgs,codedImgs,prevCoded,debug,results,isRef):
+def loop(screen,img,name,buttons,codec,userID,gameState,refImgs,codedImgs,prevCoded,debug,results,isRef,width,height):
   while True:
     screen.fill(SCREEN_COLOR)
     if gameState == GameState.FirstTimeReference:
-      screen.blit(img,(0,0))
+      rect = img.get_rect()
+      rect.center = (width - img.get_size()[0],height - img.get_size()[1])
+      screen.blit(img,rect)
       drawText(screen,"Reference Image",30,30,80,(255,255,255),(0,0,0))
       pygame.display.update()
       if not debug:
         pygame.time.wait(WAIT_TIME)
       gameState = GameState.Reference
     elif gameState == GameState.Reference:
-      screen.blit(img,(0,0))
+      rect = img.get_rect()
+      rect.center = (width - img.get_size()[0],height - img.get_size()[1])
+      screen.blit(img,rect)
       drawText(screen,"Reference Image",30,30,80,(255,255,255),(0,0,0))
       for event in pygame.event.get():
         if event.type == pygame.QUIT: #or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -187,7 +191,9 @@ def loop(screen,img,name,buttons,codec,userID,gameState,refImgs,codedImgs,prevCo
         pygame.time.wait(WAIT_TIME_BLANK)
       gameState = GameState.Coded  
     elif gameState == GameState.Coded:
-      screen.blit(img,(0,0))
+      rect = img.get_rect()
+      rect.center = (width - img.get_size()[0],height - img.get_size()[1])
+      screen.blit(img,rect)
       drawText(screen,"Coded Image. Rate it in a 1-5 scale according to the reference image",30,30,50,(255,255,255),(0,0,0))
       if debug:
         drawText(screen,f"Current image: {name}",30,100,50,(255,255,255),(0,0,0))  
@@ -265,7 +271,7 @@ def main():
   initialImg,name     = updateImage(chooseNext(None,refImgs,codedImgs,False))
   buttons             = createButtons()
   gameState           = GameState.FirstTimeReference
-  loop(screen,initialImg,name,buttons,codec,userID,gameState,refImgs,codedImgs,False,debug,results,True)
+  loop(screen,initialImg,name,buttons,codec,userID,gameState,refImgs,codedImgs,False,debug,results,True,width,height)
   
 if __name__ == "__main__":
   main()
