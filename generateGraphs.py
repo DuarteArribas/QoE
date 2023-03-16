@@ -49,19 +49,28 @@ def create_objective_graphs():
 
 def create_mos_graphs():
     # Get the mos evaluation metrics results
-    codec_df = os.listdir('mos_results')
-
-    for metric in tqdm(os.listdir('mos_results')):
-        df = pd.read_csv(f'mos_results/{metric}')
-
-        for i in tqdm(range(len(df.columns)), desc='Images', leave=False):
-            image_results = []
-
-
+    codec_dir = os.listdir('mos_results')
+    df_list = [pd.read_csv(f'mos_results/{codec}', index_col=0) for codec in codec_dir]
+    codecs = [codec.split('Results')[0].upper() for codec in codec_dir]
+    
+    # For each image
+    for i in tqdm(range(len(df_list[0].columns)), desc='Images', leave=False):
+        image_results = []
+        '''
+        Each image_results is an image;
+        Each list inside image_result is a codec
+        Each value inside the list that is inside the list is a bitrate value, in ascending order, the last being the reference value
+        '''
+        # TODO: There's a problem here! Since the reference is in the list it counts as the fifth element (find a way to deal with this situation)
+        for codec_df in df_list:
+            image_results.append(list(codec_df[f'Image {i+1}'])) # This list contains the bitrates values for each codec
         
+        create_graph(f'graphs/MOS/Image{i + 1}.png', image_results, codecs)
+    
+
 if __name__ == '__main__':
     print("Generating graphs for objective evaluation")
-    # create_objective_graphs()
+    create_objective_graphs()
     print('\n__________________________________________\n')
-    print("Generating graphs for objective evaluation")
+    print("Generating graphs for subjective evaluation")
     create_mos_graphs()
