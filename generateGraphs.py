@@ -4,11 +4,13 @@ import numpy as np
 import os
 from tqdm import tqdm
 
-def create_dir():
+def create_dir(objective_metrics):
     if not os.path.exists('graphs'):
         os.mkdir('graphs')
         for metric in objective_metrics:
             os.mkdir(f'graphs/{metric}')
+    
+        os.mkdir('graphs/MOS')
 
 def create_graph(file_path, results_list, codecs):
     # Reset plot
@@ -24,14 +26,13 @@ def create_graph(file_path, results_list, codecs):
 
     plt.legend()
     plt.savefig(file_path)
-        
-if __name__ == '__main__':
+
+def create_objective_graphs():
     # Get the objective evaluation metrics results
     objective_metrics = os.listdir('objective_results')
     codecs_dir = os.listdir(f'objective_results/{objective_metrics[0]}')
-    bitrates = list(pd.read_csv(f'objective_results/{objective_metrics[0]}/{codecs_dir[0]}', index_col=0).index)
     codecs = [codec.split('-')[0] for codec in codecs_dir]
-    create_dir()
+    create_dir(objective_metrics)
 
     for metric in tqdm(objective_metrics,desc='Metrics'):
         # Each csv represents a codec
@@ -44,4 +45,23 @@ if __name__ == '__main__':
             for codec_df in df_list:
                 image_results.append(list(codec_df[f'Image {i+1}'])) # This list contains the bitrates values for each codec
             
-            create_graph(f'graphs/{metric}/Image{i + 1}.png', image_results, codecs)   
+            create_graph(f'graphs/{metric}/Image{i + 1}.png', image_results, codecs)
+
+def create_mos_graphs():
+    # Get the mos evaluation metrics results
+    codec_df = os.listdir('mos_results')
+
+    for metric in tqdm(os.listdir('mos_results')):
+        df = pd.read_csv(f'mos_results/{metric}')
+
+        for i in tqdm(range(len(df.columns)), desc='Images', leave=False):
+            image_results = []
+
+
+        
+if __name__ == '__main__':
+    print("Generating graphs for objective evaluation")
+    # create_objective_graphs()
+    print('\n__________________________________________\n')
+    print("Generating graphs for objective evaluation")
+    create_mos_graphs()
