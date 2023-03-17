@@ -78,13 +78,14 @@ def checkInt(str):
 def getReferenceImgs(numOfImgs):
   return [f"{IMAGES_DIR}/{REFERENCE_IMAGES_DIR}/{imgNum}.png" for imgNum in range(1,numOfImgs + 1)]
 
-def getCodedImgs(numOfImgs,codec):
+def getCodedImgs(numOfImgs):
   keys   =  [str(imgNum) for imgNum in range(1,numOfImgs + 1)]
-  values =  [f"{IMAGES_DIR}/{CODED_DIRS[codec]}/{BITRATE_DIRS[str(bitrate)]}" for bitrate in range(1,5)]
-  codedImgs = {}
-  for i in range(numOfImgs):
-    codedImgs[keys[i]] = [f"{values[j]}/{i + 1}.{CODEC_EXTENSION_MAP[codec]}" for j in range(4)]
-    codedImgs[keys[i]].append(f"{IMAGES_DIR}/{REFERENCE_IMAGES_DIR}/{i + 1}.png")
+  for codec in AVAILABLE_CODECS:
+    values =  [f"{IMAGES_DIR}/{CODED_DIRS[codec]}/{BITRATE_DIRS[str(bitrate)]}" for bitrate in range(1,5)]
+    codedImgs = {}
+    for i in range(numOfImgs):
+      codedImgs[keys[i]] = [f"{values[j]}/{i + 1}.{CODEC_EXTENSION_MAP[codec]}" for j in range(4)]
+  codedImgs[keys[i]].append(f"{IMAGES_DIR}/{REFERENCE_IMAGES_DIR}/{i + 1}.png")
   return codedImgs
   
 def init(id):
@@ -140,7 +141,7 @@ def createButtons():
   bNextPos = (BUTTON_WIDTH * 3.5,bYNext)
   return [[b1Pos,b1,ButtonStates.Idle],[b2Pos,b2,ButtonStates.Idle],[b3Pos,b3,ButtonStates.Idle],[b4Pos,b4,ButtonStates.Idle],[b5Pos,b5,ButtonStates.Idle],[bNextPos,bNext,ButtonStates.Idle]]
 
-def loop(screen,img,name,buttons,codec,userID,gameState,refImgs,codedImgs,prevCoded,debug,results,isRef,width,height):
+def loop(screen,img,name,buttons,userID,gameState,refImgs,codedImgs,prevCoded,debug,jpgResults,jpg2000Results,av1Results,isRef,width,height):
   while True:
     screen.fill(SCREEN_COLOR)
     if gameState == GameState.FirstTimeReference:
@@ -215,8 +216,8 @@ def loop(screen,img,name,buttons,codec,userID,gameState,refImgs,codedImgs,prevCo
             if pos[0] < event.pos[0] < pos[0] + BUTTON_WIDTH and pos[1] < event.pos[1] < pos[1] + BUTTON_HEIGHT:
               buttons[i][2] = ButtonStates.Active
               gameState = GameState.FirstTimeReference
-              updateResults(results,name,i + 1)
-              checkResults(results,codedImgs,codec,userID)
+              updateResults(jpgResults,jpg2000Results,av1Results,name,i + 1)
+              checkResults(jpgResults,jpg2000Results,av1Result,codedImgs,userID)
               img,name = updateImage(chooseNext(name,refImgs,codedImgs,isRef))
               isRef = not isRef
               prevCoded = False
@@ -244,34 +245,49 @@ def drawText(surface,text,x,y,fontSize,fontColor,bgColor):
   pygame.draw.rect(surface,bgColor,bgRect)
   surface.blit(textSurface,(x,y))
 
-def updateResults(results,previousImage,score):
-  if "References" in previousImage:
-    results[f"Image {getImgNumFromPath(previousImage)}"]["Image Reference"] = score
-  else:
-    results[f"Image {getImgNumFromPath(previousImage)}"][previousImage.split("/")[2]] = score
+def updateResults(jpgResults,jpg2000Results,av1Results,previousImage,score):
+  realCodec = previousImage.split("/")[-2].lower()
+  if realCodec == "jpg":
+    if "References" in previousImage:
+      jpgResults[f"Image {getImgNumFromPath(previousImage)}"]["Image Reference"] = score
+    else:
+      jpgResults[f"Image {getImgNumFromPath(previousImage)}"][previousImage.split("/")[2]] = score
+  elif realCodec == "jpg2000":
+    if "References" in previousImage:
+      jpg2000Results[f"Image {getImgNumFromPath(previousImage)}"]["Image Reference"] = score
+    else:
+      jpg2000Results[f"Image {getImgNumFromPath(previousImage)}"][previousImage.split("/")[2]] = score
+  elif realCodec == "av1":
+    if "References" in previousImage:
+      av1Results[f"Image {getImgNumFromPath(previousImage)}"]["Image Reference"] = score
+    else:
+      av1Results[f"Image {getImgNumFromPath(previousImage)}"][previousImage.split("/")[2]] = score
 
-def checkResults(results,codedImgs,codec,userID):
+def checkResults(jpgResults,jpg2000Results,av1Result,codedImgs,userID):
   maxLength = max([len(value) for value in codedImgs.values()])
   if maxLength == 0:
     if not os.path.exists(f"subjective_results/{userID}"):
       os.makedirs(f"subjective_results/{userID}")
-    results.to_csv(f"subjective_results/{userID}/{codec}Results.csv")
+    jpgResults.to_csv(f"subjective_results/{userID}/jpgResults.csv")
+    jpg2000Results.to_csv(f"subjective_results/{userID}/jpg2000Results.csv")
+    av1Result.to_csv(f"subjective_results/{userID}/av1Result.csv")
     pygame.quit()
     exit()
     
 def main():
   userID              = getUserID()
   debug               = getDebug()
-  codec               = getCodec()
   numImgs             = getNumImgs()
-  results             = pd.DataFrame(index = ["bitrate-1","bitrate-2","bitrate-3","bitrate-4","Image Reference"],columns = [f"Image {imgNum}" for imgNum in range(1,numImgs + 1)])
+  jpgResults          = pd.DataFrame(index = ["bitrate-1","bitrate-2","bitrate-3","bitrate-4","Image Reference"],columns = [f"Image {imgNum}" for imgNum in range(1,numImgs + 1)])
+  jpg2000Results      = pd.DataFrame(index = ["bitrate-1","bitrate-2","bitrate-3","bitrate-4","Image Reference"],columns = [f"Image {imgNum}" for imgNum in range(1,numImgs + 1)])
+  av1Results          = pd.DataFrame(index = ["bitrate-1","bitrate-2","bitrate-3","bitrate-4","Image Reference"],columns = [f"Image {imgNum}" for imgNum in range(1,numImgs + 1)])
   refImgs             = getReferenceImgs(numImgs)
-  codedImgs           = getCodedImgs(numImgs,codec)
+  codedImgs           = getCodedImgs(numImgs)
   screen,width,height = init(userID)
   initialImg,name     = updateImage(chooseNext(None,refImgs,codedImgs,False))
   buttons             = createButtons()
   gameState           = GameState.FirstTimeReference
-  loop(screen,initialImg,name,buttons,codec,userID,gameState,refImgs,codedImgs,False,debug,results,True,width,height)
+  loop(screen,initialImg,name,buttons,userID,gameState,refImgs,codedImgs,False,debug,jpgResults,jpg2000Results,av1Results,True,width,height)
   
 if __name__ == "__main__":
   main()

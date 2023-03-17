@@ -1,7 +1,8 @@
-opencv-python
-numpy
-scikit-image
-matplotlib
-sewar
-tqdm
-pandas
+matplotlib==3.7.1
+numpy==1.24.2
+pandas==1.5.3
+pygame==2.3.0
+screeninfo==0.8.1
+sewar==0.4.5
+skimage==0.0
+tqdm==4.64.0
