@@ -80,12 +80,17 @@ def getReferenceImgs(numOfImgs):
 
 def getCodedImgs(numOfImgs):
   keys   =  [str(imgNum) for imgNum in range(1,numOfImgs + 1)]
+  codedImgs = {}
   for codec in AVAILABLE_CODECS:
     values =  [f"{IMAGES_DIR}/{CODED_DIRS[codec]}/{BITRATE_DIRS[str(bitrate)]}" for bitrate in range(1,5)]
-    codedImgs = {}
     for i in range(numOfImgs):
-      codedImgs[keys[i]] = [f"{values[j]}/{i + 1}.{CODEC_EXTENSION_MAP[codec]}" for j in range(4)]
-  codedImgs[keys[i]].append(f"{IMAGES_DIR}/{REFERENCE_IMAGES_DIR}/{i + 1}.png")
+      if not keys[i] in codedImgs:
+        codedImgs[keys[i]] = ([f"{values[j]}/{i + 1}.{CODEC_EXTENSION_MAP[codec]}" for j in range(4)])
+      else:
+        codedImgs[keys[i]].extend(([f"{values[j]}/{i + 1}.{CODEC_EXTENSION_MAP[codec]}" for j in range(4)]))
+  
+  for i in range(numOfImgs):
+    codedImgs[keys[i]].append(f"{IMAGES_DIR}/{REFERENCE_IMAGES_DIR}/{i + 1}.png")
   return codedImgs
   
 def init(id):
@@ -217,7 +222,7 @@ def loop(screen,img,name,buttons,userID,gameState,refImgs,codedImgs,prevCoded,de
               buttons[i][2] = ButtonStates.Active
               gameState = GameState.FirstTimeReference
               updateResults(jpgResults,jpg2000Results,av1Results,name,i + 1)
-              checkResults(jpgResults,jpg2000Results,av1Result,codedImgs,userID)
+              checkResults(jpgResults,jpg2000Results,av1Results,codedImgs,userID)
               img,name = updateImage(chooseNext(name,refImgs,codedImgs,isRef))
               isRef = not isRef
               prevCoded = False
@@ -246,21 +251,17 @@ def drawText(surface,text,x,y,fontSize,fontColor,bgColor):
   surface.blit(textSurface,(x,y))
 
 def updateResults(jpgResults,jpg2000Results,av1Results,previousImage,score):
-  realCodec = previousImage.split("/")[-2].lower()
-  if realCodec == "jpg":
-    if "References" in previousImage:
-      jpgResults[f"Image {getImgNumFromPath(previousImage)}"]["Image Reference"] = score
-    else:
+  realCodec = previousImage.split("/")[-3].lower()
+  if "References" in previousImage:
+    jpgResults[f"Image {getImgNumFromPath(previousImage)}"]["Image Reference"] = score
+    jpg2000Results[f"Image {getImgNumFromPath(previousImage)}"]["Image Reference"] = score
+    av1Results[f"Image {getImgNumFromPath(previousImage)}"]["Image Reference"] = score
+  else:
+    if realCodec == "jpg":
       jpgResults[f"Image {getImgNumFromPath(previousImage)}"][previousImage.split("/")[2]] = score
-  elif realCodec == "jpg2000":
-    if "References" in previousImage:
-      jpg2000Results[f"Image {getImgNumFromPath(previousImage)}"]["Image Reference"] = score
-    else:
+    elif realCodec == "jpg2000":
       jpg2000Results[f"Image {getImgNumFromPath(previousImage)}"][previousImage.split("/")[2]] = score
-  elif realCodec == "av1":
-    if "References" in previousImage:
-      av1Results[f"Image {getImgNumFromPath(previousImage)}"]["Image Reference"] = score
-    else:
+    elif realCodec == "av1":
       av1Results[f"Image {getImgNumFromPath(previousImage)}"][previousImage.split("/")[2]] = score
 
 def checkResults(jpgResults,jpg2000Results,av1Result,codedImgs,userID):
