@@ -14,9 +14,7 @@ def isOutlier(mosCharacteristics,userDir):
       mosCharacteristics.getConfidenceIntervals()
     )
   ) < (.3 * mosCharacteristics.countOfAllScores())
-  
-  if areAbove5 and areBelow30 :
-    print("It's outlier")
+  return areAbove5 and areBelow30
 
 def main():
   mosCharacteristics = MOS()
