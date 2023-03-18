@@ -137,13 +137,13 @@ def createButtons():
   b5       = font.render("5",True,BUTTON_FOREGROUND_COLOR)
   bNext    = font.render("Continue",True,BUTTON_FOREGROUND_COLOR)
   bY       = SCREEN_HEIGHT - BUTTON_HEIGHT
-  bYNext   = SCREEN_HEIGHT - 2 * BUTTON_HEIGHT
+  bYNext   = SCREEN_HEIGHT - 2.5 * BUTTON_HEIGHT
   b1Pos    = (0               ,bY)
   b2Pos    = (BUTTON_WIDTH    ,bY)
   b3Pos    = (BUTTON_WIDTH * 2,bY)
   b4Pos    = (BUTTON_WIDTH * 3,bY)
   b5Pos    = (BUTTON_WIDTH * 4,bY)
-  bNextPos = (BUTTON_WIDTH * 3.5,bYNext)
+  bNextPos = (BUTTON_WIDTH * 2,bYNext)
   return [[b1Pos,b1,ButtonStates.Idle],[b2Pos,b2,ButtonStates.Idle],[b3Pos,b3,ButtonStates.Idle],[b4Pos,b4,ButtonStates.Idle],[b5Pos,b5,ButtonStates.Idle],[bNextPos,bNext,ButtonStates.Idle]]
 
 def loop(screen,img,name,buttons,userID,gameState,refImgs,codedImgs,prevCoded,debug,jpgResults,jpg2000Results,av1Results,isRef,width,height):
