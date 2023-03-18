@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 from tqdm import tqdm
+import cv2
 
 def create_dir(objective_metrics):
     if not os.path.exists('graphs'):
@@ -11,14 +12,56 @@ def create_dir(objective_metrics):
             os.mkdir(f'graphs/{metric}')
     
         os.mkdir('graphs/MOS')
+        
+def get_bpp(img_path):
+    resolution = 563000
+    size = os.stat(img_path).st_size * 8
+    
+    return size / resolution
+    
+        
+def get_bitrate_values(image_index):
+    codec_list = {'JPG':'jpg', 'JPG2000':'jp2', 'AV1':'mp4'} 
 
+    # Para cada bitrate [1,..,n], encontrar o bpp para a imagem i+1
+    # Criar três listas, uma para cada codec
+    X_t = [[],[],[]]
+    for i in range(4):
+        # AV1
+        X_t[0].append(get_bpp(f'images/AV1/bitrate-{i+1}/{int(image_index[-1]) + 1}.{codec_list["AV1"]}'))
+        
+        # JPG
+        X_t[1].append(get_bpp(f'images/JPG/bitrate-{i+1}/{int(image_index[-1]) + 1}.{codec_list["JPG"]}'))
+        
+        # JPG2000
+        X_t[2].append(get_bpp(f'images/JPG2000/bitrate-{i+1}/{int(image_index[-1]) + 1}.{codec_list["JPG2000"]}'))
+        
+    return X_t
+               
 def create_graph(file_path, results_list, codecs):
     # Reset plot
     plt.clf()
 
-    X = [i for i in range(len(results_list[0]))]
+    X = get_bitrate_values(file_path.split('/')[-1].split('.')[0])
     for i,codec_results in enumerate(results_list):
-        plt.plot(X, codec_results, label=codecs[i])
+        plt.plot(X[i], codec_results, label=codecs[i])
+    
+    plt.xlabel("Bitrate")
+    plt.ylabel(f"{file_path.split('/')[1]} score")
+    plt.title(f"{file_path.split('/')[1]} results for image {file_path.split('/')[2].split('.')[0][-1]}")
+
+    plt.legend()
+    plt.savefig(file_path)
+    
+def create_graph_mos(file_path, results_list, codecs):
+    # Reset plot
+    plt.clf()
+
+    X = get_bitrate_values(file_path.split('/')[-1].split('.')[0])
+    marker_list = ['o', 'x', '^']
+    for i,codec_results in enumerate(results_list):
+        codec_results = codec_results[:-1]
+        plt.plot(X[i], codec_results, label=codecs[i], marker=marker_list[i])
     
     plt.xlabel("Bitrate")
     plt.ylabel(f"{file_path.split('/')[1]} score")
@@ -65,10 +108,10 @@ def create_mos_graphs():
         for codec_df in df_list:
             image_results.append(list(codec_df[f'Image {i+1}'])) # This list contains the bitrates values for each codec
         
-        create_graph(f'graphs/MOS/Image{i + 1}.png', image_results, codecs)
+        create_graph_mos(f'graphs/MOS/Image{i + 1}.png', image_results, codecs)
     
 
-if __name__ == '__main__':
+if __name__ == '__main__':    
     print("Generating graphs for objective evaluation")
     create_objective_graphs()
     print('\n__________________________________________\n')

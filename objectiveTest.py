@@ -8,7 +8,7 @@ import os
 from tqdm import tqdm
 
 SCORES_DIR = {}
-CODEC_LIST = {'JPG':'jpg', 'JPG2000':'jp2', 'AV1':'png'} # Name followed by extension
+CODEC_LIST = {'JPG':'jpg', 'JPG2000':'jp2', 'AV1':'mp4'} # Name followed by extension
 BITRATE_LIST = ['bitrate-1', 'bitrate-2', 'bitrate-3', 'bitrate-4']
 
 def initialize_dict():
