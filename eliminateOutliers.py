@@ -2,8 +2,9 @@ from mos import MOS
 
 def main():
   mosCharacteristics = MOS()
-  mosCharacteristics.printResultsArray(mosCharacteristics.av1ArrayResults)
-  print(mosCharacteristics.countOfAllScores()[2])
+  print(mosCharacteristics.countValuesOutsideCI("1",mosCharacteristics.getConfidenceIntervals()))
+  print(mosCharacteristics.countValuesAboveCI("1",mosCharacteristics.getConfidenceIntervals()))
+  print(mosCharacteristics.countValuesBelowCI("1",mosCharacteristics.getConfidenceIntervals()))
 
 if __name__ == "__main__":
   main()

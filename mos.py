@@ -85,3 +85,84 @@ class MOS:
         countJpg2000 += len(self.jpg2000ArrayResults[i][j])
         countAv1     += len(self.av1ArrayResults[i][j])
     return (countJpg,countJpg2000,countAv1)
+  
+  def countValuesOutsideCI(self,userDir,CIs):
+    jpgCI     = CIs[0]
+    jpg2000CI = CIs[1]
+    av1CI     = CIs[2]
+    countValuesOutside = 0
+    for result in os.listdir(os.path.join(MOS.SUBJECTIVE_RESULTS_DIR,userDir)):
+      csvTemp = os.path.join(os.path.join(MOS.SUBJECTIVE_RESULTS_DIR,userDir),result)
+      if result == "jpgResults.csv":
+        temp = pd.read_csv(csvTemp,index_col = 0)
+        for i in range(5):
+          for j in range(5):
+            if temp.iloc[i,j] < jpgCI[i][j][0] or temp.iloc[i,j] > jpgCI[i][j][1]:
+              countValuesOutside += 1
+      if result == "jpg2000Results.csv":
+        temp = pd.read_csv(csvTemp,index_col = 0)
+        for i in range(5):
+          for j in range(5):
+            if temp.iloc[i,j] < jpg2000CI[i][j][0] or temp.iloc[i,j] > jpg2000CI[i][j][1]:
+              countValuesOutside += 1
+      if result == "av1Results.csv":
+        temp = pd.read_csv(csvTemp,index_col = 0)
+        for i in range(5):
+          for j in range(5):
+            if temp.iloc[i,j] < av1CI[i][j][0] or temp.iloc[i,j] > av1CI[i][j][1]:
+              countValuesOutside += 1
+    return countValuesOutside
+
+  def countValuesAboveCI(self,userDir,CIs):
+    jpgCI     = CIs[0]
+    jpg2000CI = CIs[1]
+    av1CI     = CIs[2]
+    countValuesAbove = 0
+    for result in os.listdir(os.path.join(MOS.SUBJECTIVE_RESULTS_DIR,userDir)):
+      csvTemp = os.path.join(os.path.join(MOS.SUBJECTIVE_RESULTS_DIR,userDir),result)
+      if result == "jpgResults.csv":
+        temp = pd.read_csv(csvTemp,index_col = 0)
+        for i in range(5):
+          for j in range(5):
+            if temp.iloc[i,j] > jpgCI[i][j][1]:
+              countValuesAbove += 1
+      if result == "jpg2000Results.csv":
+        temp = pd.read_csv(csvTemp,index_col = 0)
+        for i in range(5):
+          for j in range(5):
+            if temp.iloc[i,j] > jpg2000CI[i][j][1]:
+              countValuesAbove += 1
+      if result == "av1Results.csv":
+        temp = pd.read_csv(csvTemp,index_col = 0)
+        for i in range(5):
+          for j in range(5):
+            if temp.iloc[i,j] > av1CI[i][j][1]:
+              countValuesAbove += 1
+    return countValuesAbove
+
+  def countValuesBelowCI(self,userDir,CIs):
+    jpgCI     = CIs[0]
+    jpg2000CI = CIs[1]
+    av1CI     = CIs[2]
+    countValuesBelow = 0
+    for result in os.listdir(os.path.join(MOS.SUBJECTIVE_RESULTS_DIR,userDir)):
+      csvTemp = os.path.join(os.path.join(MOS.SUBJECTIVE_RESULTS_DIR,userDir),result)
+      if result == "jpgResults.csv":
+        temp = pd.read_csv(csvTemp,index_col = 0)
+        for i in range(5):
+          for j in range(5):
+            if temp.iloc[i,j] < jpgCI[i][j][0]:
+              countValuesBelow += 1
+      if result == "jpg2000Results.csv":
+        temp = pd.read_csv(csvTemp,index_col = 0)
+        for i in range(5):
+          for j in range(5):
+            if temp.iloc[i,j] < jpg2000CI[i][j][0]:
+              countValuesBelow += 1
+      if result == "av1Results.csv":
+        temp = pd.read_csv(csvTemp,index_col = 0)
+        for i in range(5):
+          for j in range(5):
+            if temp.iloc[i,j] < av1CI[i][j][0]:
+              countValuesBelow += 1
+    return countValuesBelow
