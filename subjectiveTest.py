@@ -271,7 +271,7 @@ def checkResults(jpgResults,jpg2000Results,av1Result,codedImgs,userID):
       os.makedirs(f"subjective_results/{userID}")
     jpgResults.to_csv(f"subjective_results/{userID}/jpgResults.csv")
     jpg2000Results.to_csv(f"subjective_results/{userID}/jpg2000Results.csv")
-    av1Result.to_csv(f"subjective_results/{userID}/av1Result.csv")
+    av1Result.to_csv(f"subjective_results/{userID}/av1Results.csv")
     pygame.quit()
     exit()
     

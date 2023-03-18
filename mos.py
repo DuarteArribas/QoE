@@ -74,3 +74,14 @@ class MOS:
       for j in range(5):
         print(threeDArray[i][j],end="|")
       print()
+  
+  def countOfAllScores(self):
+    countJpg     = 0
+    countJpg2000 = 0
+    countAv1     = 0
+    for i in range(5):
+      for j in range(5):
+        countJpg     += len(self.jpgArrayResults[i][j])
+        countJpg2000 += len(self.jpg2000ArrayResults[i][j])
+        countAv1     += len(self.av1ArrayResults[i][j])
+    return (countJpg,countJpg2000,countAv1)
