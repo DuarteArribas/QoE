@@ -5,10 +5,10 @@ import os
 import pandas as pd
 
 # MOSP function (iqm == metric result)
-# def get_mosp(a,b,c, iqm):
-#     return a / (1 + math.e(-b * (iqm - c)))    
-def get_mosp(iqm,a,b,c,d):
-    return a + b * np.exp(-c * iqm) + d * iqm
+def get_mosp(a,b,c, iqm):
+    return a / (1 + np.exp(-b * (iqm - c)))    
+# def get_mosp(iqm,a,b,c,d):
+#     return a + b * np.exp(-c * iqm) + d * iqm
 
 def get_metric_values(metric_path):
     csv_list = os.listdir(metric_path)
@@ -25,7 +25,8 @@ def get_metric_values(metric_path):
 def generate_mosp(objective_metric_values, mos_values, metric_name):
     popt, _ = curve_fit(get_mosp, objective_metric_values, mos_values)
 
-    a,b,c,d = popt
+    # a,b,c,d = popt
+    a,b,c = popt
 
     # Initialize the dataframes
     csv_list = os.listdir(f'objective_results/{metric_name}')
@@ -36,7 +37,8 @@ def generate_mosp(objective_metric_values, mos_values, metric_name):
 
         for y in range(len(objective_df.values)):
             for x in range(len(objective_df.values[0])):
-                mosp_df.values[y][x] = round(get_mosp(objective_df.values[y][x], a, b, c, d), 3)
+                # mosp_df.values[y][x] = round(get_mosp(objective_df.values[y][x], a, b, c, d), 3)
+                mosp_df.values[y][x] = round(get_mosp(objective_df.values[y][x], a, b, c), 3)
         
         mosp_df.to_csv(f'mosp_results/{metric_name}/{csv_list[i]}')
 
@@ -54,6 +56,6 @@ if __name__ == '__main__':
         os.mkdir('mosp_results/SSIM')
         os.mkdir('mosp_results/VIFp')
 
-    # generate_mosp(psnr_values, mos_values, 'PSNR')
+    generate_mosp(psnr_values, mos_values, 'PSNR')
     generate_mosp(psnr_values, mos_values, 'SSIM')
     generate_mosp(psnr_values, mos_values, 'VIFp')
