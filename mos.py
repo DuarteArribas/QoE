@@ -84,7 +84,7 @@ class MOS:
         countJpg     += len(self.jpgArrayResults[i][j])
         countJpg2000 += len(self.jpg2000ArrayResults[i][j])
         countAv1     += len(self.av1ArrayResults[i][j])
-    return (countJpg,countJpg2000,countAv1)
+    return countJpg + countJpg2000 + countAv1
   
   def countValuesOutsideCI(self,userDir,CIs):
     jpgCI     = CIs[0]
