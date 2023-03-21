@@ -43,20 +43,48 @@ def get_bitrate_values(image_index):
 
 
 # Objective Metrics               
+# def create_graph(file_path, results_list, codecs):
+#     # Reset plot
+#     plt.clf()
+
+#     X = get_bitrate_values(file_path.split('/')[-1].split('.')[0])
+#     for i,codec_results in enumerate(results_list):
+#         plt.plot(X[i], codec_results, label=codecs[i])
+    
+#     plt.xlabel("Bitrate")
+#     plt.ylabel(f"{file_path.split('/')[1]} score")
+#     plt.title(f"{file_path.split('/')[1]} results for image {file_path.split('/')[2].split('.')[0][-1]}")
+
+#     plt.legend()
+#     plt.savefig(file_path)
+    
 def create_graph(file_path, results_list, codecs):
     # Reset plot
     plt.clf()
 
-    X = get_bitrate_values(file_path.split('/')[-1].split('.')[0])
-    for i,codec_results in enumerate(results_list):
-        plt.plot(X[i], codec_results, label=codecs[i])
-    
-    plt.xlabel("Bitrate")
-    plt.ylabel(f"{file_path.split('/')[1]} score")
-    plt.title(f"{file_path.split('/')[1]} results for image {file_path.split('/')[2].split('.')[0][-1]}")
+    # Go through every image
+    fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20,7))
+    for j in range(len(results_list)):
+        X = get_bitrate_values(f'Image{j+1}')
+        for i,codec_results in enumerate(results_list[j]):
+            if j == 0:
+                axes[0][j].plot(X[i], codec_results, label=codecs[i])
+                axes[0][j].set_title(f"image {j + 1}")
+            elif j < 3:
+                axes[0][j].plot(X[i], codec_results, label='_nolegend_')
+                axes[0][j].set_title(f"image {j + 1}")
+            else: 
+                axes[1][j - 3].plot(X[i], codec_results, label='_nolegend_')
+                axes[1][j - 3].set_title(f"image {j + 1}")
 
-    plt.legend()
-    plt.savefig(file_path)
+
+    # plt.subplots_adjust(wspace=0, hspace=0)
+    fig.suptitle(f"{file_path.split('/')[-1]} results")
+    fig.delaxes(axes[1][2])
+    fig.text(0.5, 0.04, 'Bitrate', ha='center', va='center')
+    fig.text(0.06, 0.5, f"{file_path.split('/')[-1]} score", ha='center', va='center', rotation='vertical')
+    fig.legend()
+    fig.savefig(file_path)
 
 def create_objective_graphs():
     # Get the objective evaluation metrics results
@@ -69,35 +97,19 @@ def create_objective_graphs():
         # Each csv represents a codec
         df_list = [pd.read_csv(f'objective_results/{metric}/{codec}', index_col=0) for codec in codecs_dir]
 
+        img_all_results = []
+        
         # For each image
         for i in tqdm(range(len(df_list[0].columns)), desc='Images', leave=False):
             image_results = []
             # For each codec
             for codec_df in df_list:
                 image_results.append(list(codec_df[f'Image {i+1}'])) # This list contains the bitrates values for each codec
-            
-            create_graph(f'graphs/{metric}/Image{i + 1}.png', image_results, codecs)
+            img_all_results.append(image_results)
+        create_graph(f'graphs/{metric}', img_all_results, codecs)
             
 
 # MOS graphs
-# def create_graph_mos(file_path, results_list, confidence_intervals, codecs):
-#     # Reset plot
-#     plt.clf()
-#     X = get_bitrate_values(file_path.split('/')[-1].split('.')[0])
-#     marker_list = ['o', 'x', '^']
-#     for i,codec_results in enumerate(results_list):
-#         # Plot the results with error bars for the confidence intervals
-#         yerr = np.array(confidence_intervals[i]).reshape(2, -1)
-#         plt.errorbar(X[i], codec_results, yerr=yerr, label=codecs[i], 
-#                      marker=marker_list[i], capsize=5, capthick=2, alpha=0.7)
-
-#     plt.xlabel("Bitrate")
-#     plt.ylabel(f"{file_path.split('/')[1]} score")
-#     plt.title(f"{file_path.split('/')[1]} results for image {file_path.split('/')[2].split('.')[0][-1]}")
-
-#     plt.legend()
-#     plt.savefig(file_path)
-
 def create_graph_mos(file_path, results_list, confidence_intervals, codecs):
     # Reset plot
     plt.clf()
@@ -160,14 +172,13 @@ def create_mos_graphs():
             
         img_all_results.append(image_results)
         ci_all_results.append(confidence_intervals)
-        # create_graph_mos(f'graphs/MOS/Image{i + 1}.png', image_results, confidence_intervals, codecs)
         
     create_graph_mos(f'graphs/MOS', img_all_results, ci_all_results, codecs)
     
 
 if __name__ == '__main__':    
     print("Generating graphs for objective evaluation")
-    # create_objective_graphs()
+    create_objective_graphs()
     print('\n__________________________________________\n')
     print("Generating graphs for subjective evaluation")
     create_mos_graphs()
