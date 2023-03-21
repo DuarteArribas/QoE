@@ -4,7 +4,7 @@ mkdir images/JPG
 mkdir images/JPG2000
 mkdir images/AV1
 
-for i in {1..16};do
+for i in {1..5};do
   # JPEG
   for j in {0..3};do
     let bitrate=$(($j * (31 / 3) + 1))
