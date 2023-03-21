@@ -53,21 +53,6 @@ def create_graph(file_path, results_list, codecs):
 
     plt.legend()
     plt.savefig(file_path)
-    
-# def create_graph_mos(file_path, results_list, confidence_intervals, codecs):
-#     # Reset plot
-#     plt.clf()
-#     X = get_bitrate_values(file_path.split('/')[-1].split('.')[0])
-#     marker_list = ['o', 'x', '^']
-#     for i,codec_results in enumerate(results_list):
-#         plt.plot(X[i], codec_results, label=codecs[i], marker=marker_list[i])
-    
-#     plt.xlabel("Bitrate")
-#     plt.ylabel(f"{file_path.split('/')[1]} score")
-#     plt.title(f"{file_path.split('/')[1]} results for image {file_path.split('/')[2].split('.')[0][-1]}")
-
-#     plt.legend()
-#     plt.savefig(file_path)
 
 def create_graph_mos(file_path, results_list, confidence_intervals, codecs):
     # Reset plot
@@ -115,10 +100,6 @@ def create_mos_graphs():
     ci = mos_c.getConfidenceIntervals_dataframe()[::-1]
     codecs = [codec.split('Results')[0].upper() for codec in codec_dir]
     
-    # print(df_list[0].values.shape)
-    # print(ci[0].values.shape)
-    # quit()
-    
     # For each image
     for i in tqdm(range(len(df_list[0].columns)), desc='Images', leave=False):
         image_results = []
@@ -138,7 +119,7 @@ def create_mos_graphs():
 
 if __name__ == '__main__':    
     print("Generating graphs for objective evaluation")
-    # create_objective_graphs()
+    create_objective_graphs()
     print('\n__________________________________________\n')
     print("Generating graphs for subjective evaluation")
     create_mos_graphs()
