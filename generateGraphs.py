@@ -4,6 +4,7 @@ import numpy as np
 import os
 from tqdm import tqdm
 import cv2
+from mos import MOS 
 
 def create_dir(objective_metrics):
     if not os.path.exists('graphs'):
@@ -28,13 +29,13 @@ def get_bitrate_values(image_index):
     X_t = [[],[],[]]
     for i in range(4):
         # AV1
-        X_t[0].append(get_bpp(f'images/AV1/bitrate-{i+1}/{int(image_index[-1]) + 1}.{codec_list["AV1"]}'))
+        X_t[0].append(get_bpp(f'images/AV1/bitrate-{i+1}/{int(image_index[-1])}.{codec_list["AV1"]}'))
         
         # JPG
-        X_t[1].append(get_bpp(f'images/JPG/bitrate-{i+1}/{int(image_index[-1]) + 1}.{codec_list["JPG"]}'))
+        X_t[1].append(get_bpp(f'images/JPG/bitrate-{i+1}/{int(image_index[-1])}.{codec_list["JPG"]}'))
         
         # JPG2000
-        X_t[2].append(get_bpp(f'images/JPG2000/bitrate-{i+1}/{int(image_index[-1]) + 1}.{codec_list["JPG2000"]}'))
+        X_t[2].append(get_bpp(f'images/JPG2000/bitrate-{i+1}/{int(image_index[-1])}.{codec_list["JPG2000"]}'))
         
     return X_t
                
@@ -56,6 +57,9 @@ def create_graph(file_path, results_list, codecs):
 def create_graph_mos(file_path, results_list, codecs):
     # Reset plot
     plt.clf()
+    mos_c = MOS()
+    ci = mos_c.getConfidenceIntervals()
+    ci = ci[::-1]
 
     X = get_bitrate_values(file_path.split('/')[-1].split('.')[0])
     marker_list = ['o', 'x', '^']
@@ -69,6 +73,30 @@ def create_graph_mos(file_path, results_list, codecs):
 
     plt.legend()
     plt.savefig(file_path)
+
+# def create_graph_mos(file_path, results_list, codecs):
+#     # Reset plot
+#     plt.clf()
+#     mos_c = MOS()
+#     ci = mos_c.getConfidenceIntervals()
+#     ci = ci[::-1]
+    
+#     X = get_bitrate_values(file_path.split('/')[-1].split('.')[0])
+#     marker_list = ['o', 'x', '^']
+#     for i, codec_results in enumerate(results_list):
+#         codec_results = codec_results[:-1]
+#         yerr_lower = [codec_results[j] - ci[j][0] for j in range(len(codec_results))]
+#         yerr_upper = [ci[j][1] - codec_results[j] for j in range(len(codec_results))]
+#         plt.errorbar(X[i], codec_results, yerr=[yerr_lower, yerr_upper], 
+#                      label=codecs[i], marker=marker_list[i])
+    
+#     plt.xlabel("Bitrate")
+#     plt.ylabel(f"{file_path.split('/')[1]} score")
+#     plt.title(f"{file_path.split('/')[1]} results for image {file_path.split('/')[2].split('.')[0][-1]}")
+
+#     plt.legend()
+#     plt.savefig(file_path)
+
 
 def create_objective_graphs():
     # Get the objective evaluation metrics results
@@ -113,7 +141,7 @@ def create_mos_graphs():
 
 if __name__ == '__main__':    
     print("Generating graphs for objective evaluation")
-    create_objective_graphs()
+    # create_objective_graphs()
     print('\n__________________________________________\n')
     print("Generating graphs for subjective evaluation")
     create_mos_graphs()

@@ -8,7 +8,7 @@ import os
 from tqdm import tqdm
 
 SCORES_DIR = {}
-CODEC_LIST = {'JPG':'jpg', 'JPG2000':'jp2', 'AV1':'mp4'} # Name followed by extension
+CODEC_LIST = {'JPG':'jpg', 'JPG2000':'jp2', 'AV1':'png'} # Name followed by extension
 BITRATE_LIST = ['bitrate-1', 'bitrate-2', 'bitrate-3', 'bitrate-4']
 
 def initialize_dict():
@@ -30,6 +30,7 @@ def psnr_evaluation():
         for i in tqdm(range(1,6), leave=False, desc=f'Images'):
             reference_img = cv2.imread(f'images/References/{i}.png')
             for bitrate in os.listdir(f'images/{codec}'):
+                print(f'images/{codec}/{bitrate}/{i}.{CODEC_LIST[codec]}')
                 SCORES_DIR['PSNR'][codec][f'Image {i}'][bitrate] = round(cv2.PSNR(reference_img, cv2.imread(f'images/{codec}/{bitrate}/{i}.{CODEC_LIST[codec]}')),3)
 
     print(SCORES_DIR['PSNR'])

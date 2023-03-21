@@ -21,6 +21,9 @@ def get_metric_values(metric_path):
 
     return result_list
 
+def mosp_function(iqm,a,b,c,d):
+    return a * iqm**3 + b * iqm**2 + c * iqm + d
+
 if __name__ == '__main__':
     # Get the proper values of the metrics in lists
     mos_values = get_metric_values('mos_results')
@@ -28,7 +31,10 @@ if __name__ == '__main__':
     mosp_ssim_values = get_metric_values('mosp_results/SSIM')
     mosp_vifp_values = get_metric_values('mosp_results/VIFp')
 
-    
+    # Plot psnr mosp
+    plt.scatter(mosp_psnr_values, mos_values)
+    plt.show()
+
     print('Pearson:')
     psnr_pearson = pearsonr(mos_values, mosp_psnr_values)
     ssim_pearson = pearsonr(mos_values, mosp_ssim_values)

@@ -1,6 +1,6 @@
 ,Image 1,Image 2,Image 3,Image 4,Image 5
-bitrate-1,1.0,1.0,1.0,3.0,2.0
-bitrate-2,1.0,2.0,1.0,1.0,1.0
-bitrate-3,2.0,3.0,3.0,3.0,2.0
-bitrate-4,4.0,5.0,5.0,5.0,5.0
-Image Reference,5.0,5.0,5.0,5.0,5.0
+bitrate-1,1.0,1.0,1.0,1.0,1.0
+bitrate-2,2.0,1.0,2.0,2.0,1.0
+bitrate-3,1.0,2.0,3.0,1.0,1.0
+bitrate-4,4.0,5.0,3.0,4.0,5.0
+Image Reference,5.0,2.0,3.0,5.0,5.0
