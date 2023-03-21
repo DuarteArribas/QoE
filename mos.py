@@ -68,6 +68,19 @@ class MOS:
         jpg2000CI[i][j] = (means[1][i][j] - stddevs[1][i][j],means[1][i][j] + stddevs[1][i][j])
         av1CI[i][j]     = (means[2][i][j] - stddevs[2][i][j],means[2][i][j] + stddevs[2][i][j])
     return (jpgCI,jpg2000CI,av1CI)
+  
+  def getConfidenceIntervals_dataframe(self):
+    jpgCI     = pd.DataFrame(index = ["bitrate-1", "bitrate-2", "bitrate-3", "bitrate-4"],columns = ["Image 1","Image 2","Image 3","Image 4","Image 5"])
+    jpg2000CI = pd.DataFrame(index = ["bitrate-1", "bitrate-2", "bitrate-3", "bitrate-4"],columns = ["Image 1","Image 2","Image 3","Image 4","Image 5"])
+    av1CI     = pd.DataFrame(index = ["bitrate-1", "bitrate-2", "bitrate-3", "bitrate-4"],columns = ["Image 1","Image 2","Image 3","Image 4","Image 5"])
+    means   = self.getMeans()
+    stddevs = self.getStddevs()
+    for i in range(5): # Images
+      for j in range(4): # Bitrates
+        jpgCI.values.T[i][j]     = (means[0][i][j] - stddevs[0][i][j],means[0][i][j] + stddevs[0][i][j])
+        jpg2000CI.values.T[i][j] = (means[1][i][j] - stddevs[1][i][j],means[1][i][j] + stddevs[1][i][j])
+        av1CI.values.T[i][j]     = (means[2][i][j] - stddevs[2][i][j],means[2][i][j] + stddevs[2][i][j])
+    return [jpgCI,jpg2000CI,av1CI]
 
   def printResultsArray(self,threeDArray):
     for i in range(5):
