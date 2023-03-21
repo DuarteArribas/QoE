@@ -22,7 +22,6 @@ def get_bpp(img_path):
     
     return size / resolution
     
-        
 def get_bitrate_values(image_index):
     codec_list = {'JPG':'jpg', 'JPG2000':'jp2', 'AV1':'mp4'} 
 
@@ -42,22 +41,7 @@ def get_bitrate_values(image_index):
     return X_t
 
 
-# Objective Metrics               
-# def create_graph(file_path, results_list, codecs):
-#     # Reset plot
-#     plt.clf()
-
-#     X = get_bitrate_values(file_path.split('/')[-1].split('.')[0])
-#     for i,codec_results in enumerate(results_list):
-#         plt.plot(X[i], codec_results, label=codecs[i])
-    
-#     plt.xlabel("Bitrate")
-#     plt.ylabel(f"{file_path.split('/')[1]} score")
-#     plt.title(f"{file_path.split('/')[1]} results for image {file_path.split('/')[2].split('.')[0][-1]}")
-
-#     plt.legend()
-#     plt.savefig(file_path)
-    
+# Objective Metrics                   
 def create_graph(file_path, results_list, codecs):
     # Reset plot
     plt.clf()
@@ -77,8 +61,6 @@ def create_graph(file_path, results_list, codecs):
                 axes[1][j - 3].plot(X[i], codec_results, label='_nolegend_')
                 axes[1][j - 3].set_title(f"image {j + 1}")
 
-
-    # plt.subplots_adjust(wspace=0, hspace=0)
     fig.suptitle(f"{file_path.split('/')[-1]} results")
     fig.delaxes(axes[1][2])
     fig.text(0.5, 0.04, 'Bitrate', ha='center', va='center')
@@ -115,7 +97,6 @@ def create_graph_mos(file_path, results_list, confidence_intervals, codecs):
     plt.clf()
     
     # Go through every image
-    # X = get_bitrate_values(file_path.split('/')[-1].split('.')[0])
     marker_list = ['o', 'x', '^']
     
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20,7))
@@ -158,7 +139,7 @@ def create_mos_graphs():
     ci_all_results = []
     
     # For each image
-    for i in tqdm(range(len(df_list[0].columns)), desc='Images', leave=False):
+    for i in tqdm(range(len(df_list[0].columns)), desc='Images'):
         image_results = []
         confidence_intervals = []
         '''
