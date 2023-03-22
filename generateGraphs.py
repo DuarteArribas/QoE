@@ -12,8 +12,8 @@ def create_dir():
     if not os.path.exists('graphs'):
         os.mkdir('graphs')    
         
-def get_bpp(img_path):
-    resolution = 563000
+def get_bpp(img_path,size):
+    resolution = size
     size = os.stat(img_path).st_size * 8
 
     return size / resolution
@@ -26,13 +26,13 @@ def get_bitrate_values(image_index):
     X_t = [[],[],[]]
     for i in range(4):
         # AV1
-        X_t[0].append(get_bpp(f'images/AV1/bitrate-{i+1}/{int(image_index[-1])}.{codec_list["AV1"]}'))
+        X_t[0].append(get_bpp(f'images/AV1/bitrate-{i+1}/{int(image_index[-1])}.{codec_list["AV1"]}',992 * 550))
         
         # JPG
-        X_t[1].append(get_bpp(f'images/JPG/bitrate-{i+1}/{int(image_index[-1])}.{codec_list["JPG"]}'))
+        X_t[1].append(get_bpp(f'images/JPG/bitrate-{i+1}/{int(image_index[-1])}.{codec_list["JPG"]}',1000 * 563))
         
         # JPG2000
-        X_t[2].append(get_bpp(f'images/JPG2000/bitrate-{i+1}/{int(image_index[-1])}.{codec_list["JPG2000"]}'))
+        X_t[2].append(get_bpp(f'images/JPG2000/bitrate-{i+1}/{int(image_index[-1])}.{codec_list["JPG2000"]}',1000 * 563))
    
     return X_t
 
