@@ -9,9 +9,9 @@ class MOS:
     
   # == Methods ==
   def __init__(self):
-    self.jpgArrayResults     = [[[],[],[],[],[]],[[],[],[],[],[],],[[],[],[],[],[],],[[],[],[],[],[],],[[],[],[],[],[]]]
-    self.jpg2000ArrayResults = [[[],[],[],[],[]],[[],[],[],[],[],],[[],[],[],[],[],],[[],[],[],[],[],],[[],[],[],[],[]]]
-    self.av1ArrayResults     = [[[],[],[],[],[]],[[],[],[],[],[],],[[],[],[],[],[],],[[],[],[],[],[],],[[],[],[],[],[]]]
+    self.jpgArrayResults     = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
+    self.jpg2000ArrayResults = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
+    self.av1ArrayResults     = [[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]],[[],[],[],[],[]]]
     self.initializeResultArrays()
     
   def initializeResultArrays(self):
@@ -35,9 +35,9 @@ class MOS:
               self.av1ArrayResults[i][j].append(temp.iloc[i,j])
 
   def getMeans(self):
-    jpgMean     = [[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
-    jpg2000Mean = [[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
-    av1Mean     = [[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
+    jpgMean     = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
+    jpg2000Mean = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
+    av1Mean     = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
     for i in range(5):
       for j in range(5):
         jpgMean[i][j]     = np.mean(np.array(self.jpgArrayResults[i][j]))
@@ -46,9 +46,9 @@ class MOS:
     return (jpgMean,jpg2000Mean,av1Mean)
 
   def getStddevs(self):
-    jpgStdev     = [[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
-    jpg2000Stdev = [[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
-    av1Stdev     = [[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
+    jpgStdev     = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+    jpg2000Stdev = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+    av1Stdev     = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
     for i in range(5):
       for j in range(5):
         jpgStdev[i][j]     = np.std(np.array(self.jpgArrayResults[i][j]))
@@ -57,9 +57,9 @@ class MOS:
     return (jpgStdev,jpg2000Stdev,av1Stdev)
 
   def getConfidenceIntervals(self):
-    jpgCI     = [[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
-    jpg2000CI = [[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
-    av1CI     = [[0,0,0,0,0],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0,],[0,0,0,0,0]]
+    jpgCI     = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+    jpg2000CI = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+    av1CI     = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
     means   = self.getMeans()
     stddevs = self.getStddevs()
     for i in range(5):
@@ -67,6 +67,19 @@ class MOS:
         jpgCI[i][j]     = (means[0][i][j] - stddevs[0][i][j],means[0][i][j] + stddevs[0][i][j])
         jpg2000CI[i][j] = (means[1][i][j] - stddevs[1][i][j],means[1][i][j] + stddevs[1][i][j])
         av1CI[i][j]     = (means[2][i][j] - stddevs[2][i][j],means[2][i][j] + stddevs[2][i][j])
+    return (jpgCI,jpg2000CI,av1CI)
+  
+  def getConfidenceIntervalsOutlier(self,value):
+    jpgCI     = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+    jpg2000CI = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+    av1CI     = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]
+    means   = self.getMeans()
+    stddevs = self.getStddevs()
+    for i in range(5):
+      for j in range(5):
+        jpgCI[i][j]     = (means[0][i][j] - stddevs[0][i][j] * value,means[0][i][j] + stddevs[0][i][j] * value)
+        jpg2000CI[i][j] = (means[1][i][j] - stddevs[1][i][j] * value,means[1][i][j] + stddevs[1][i][j] * value)
+        av1CI[i][j]     = (means[2][i][j] - stddevs[2][i][j] * value,means[2][i][j] + stddevs[2][i][j] * value)
     return (jpgCI,jpg2000CI,av1CI)
   
   def getConfidenceIntervals_dataframe(self):
@@ -179,3 +192,13 @@ class MOS:
             if temp.iloc[i,j] < av1CI[i][j][0]:
               countValuesBelow += 1
     return countValuesBelow
+
+  def checkDistributionNormal(self,userDir):
+    allData = []
+    for result in os.listdir(os.path.join(MOS.SUBJECTIVE_RESULTS_DIR,userDir)):
+      csvTemp = os.path.join(os.path.join(MOS.SUBJECTIVE_RESULTS_DIR,userDir),result)
+      temp = pd.read_csv(csvTemp,index_col = 0)
+      for i in range(5):
+        for j in range(5):
+          allData.append(temp.iloc[i,j])
+    return st.shapiro(allData)[1] > 0.05
