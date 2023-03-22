@@ -19,7 +19,7 @@ def create_dir(objective_metrics):
 def get_bpp(img_path):
     resolution = 563000
     size = os.stat(img_path).st_size * 8
-    
+
     return size / resolution
     
 def get_bitrate_values(image_index):
@@ -102,8 +102,9 @@ def create_graph_mos(file_path, results_list, confidence_intervals, codecs):
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20,7))
     for j in range(len(results_list)):
         X = get_bitrate_values(f'Image{j+1}')
+        X = [X[0], X[2], X[1]]
         for i,codec_results in enumerate(results_list[j]):
-            # Plot the results with error bars for the confidence intervals
+            # Plot the results with error bars for the confidence intervals            
             yerr = np.array(confidence_intervals[j][i]).reshape(2, -1)
             if j == 0:
                 axes[0][j].errorbar(X[i], codec_results, yerr=yerr, label=codecs[i], 
