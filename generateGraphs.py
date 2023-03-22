@@ -61,11 +61,11 @@ def create_graph(file_path, results_list, codecs):
                 axes[1][j - 3].plot(X[i], codec_results, label='_nolegend_')
                 axes[1][j - 3].set_title(f"image {j + 1}")
 
-    fig.suptitle(f"{file_path.split('/')[-1]} results")
+    fig.suptitle(f"{file_path.split('/')[-1]} results", fontsize=26)
     fig.delaxes(axes[1][2])
-    fig.text(0.5, 0.04, 'Bitrate', ha='center', va='center')
-    fig.text(0.06, 0.5, f"{file_path.split('/')[-1]} score", ha='center', va='center', rotation='vertical')
-    fig.legend()
+    fig.text(0.5, 0.04, 'Bitrate', ha='center', va='center', fontsize=20)
+    fig.text(0.06, 0.5, f"{file_path.split('/')[-1]} score", ha='center', va='center', rotation='vertical', fontsize=20)
+    fig.legend(fontsize=16)
     fig.savefig(file_path)
 
 def create_objective_graphs():
@@ -107,24 +107,24 @@ def create_graph_mos(file_path, results_list, confidence_intervals, codecs):
             yerr = np.array(confidence_intervals[j][i]).reshape(2, -1)
             if j == 0:
                 axes[0][j].errorbar(X[i], codec_results, yerr=yerr, label=codecs[i], 
-                        marker=marker_list[i], capsize=5, capthick=2, alpha=0.7)
+                        marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
                 axes[0][j].set_title(f"image {j + 1}")
             elif j < 3:
                 axes[0][j].errorbar(X[i], codec_results, yerr=yerr, label='_nolegend_', 
-                        marker=marker_list[i], capsize=5, capthick=2, alpha=0.7)
+                        marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
                 axes[0][j].set_title(f"image {j + 1}")
             else: 
                 axes[1][j - 3].errorbar(X[i], codec_results, yerr=yerr, label='_nolegend_', 
-                        marker=marker_list[i], capsize=5, capthick=2, alpha=0.7)
+                        marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
                 axes[1][j - 3].set_title(f"image {j + 1}")
 
     
     # plt.subplots_adjust(wspace=0, hspace=0)
-    fig.suptitle('MOS results')
+    fig.suptitle('MOS results', fontsize=26)
     fig.delaxes(axes[1][2])
-    fig.text(0.5, 0.04, 'Bitrate', ha='center', va='center')
-    fig.text(0.06, 0.5, 'MOS score', ha='center', va='center', rotation='vertical')
-    fig.legend()
+    fig.text(0.5, 0.04, 'Bitrate', ha='center', va='center', fontsize=20)
+    fig.text(0.06, 0.5, 'MOS score', ha='center', va='center', rotation='vertical', fontsize=20)
+    fig.legend(fontsize=16)
     fig.savefig(file_path)
 
 def create_mos_graphs():
