@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import numpy as np
 import scipy.stats as st
+import math
 
 class MOS:
   # == Class Variables ==
@@ -64,9 +65,18 @@ class MOS:
     stddevs = self.getStddevs()
     for i in range(5):
       for j in range(5):
-        jpgCI[i][j]     = (means[0][i][j] - .95 * (stddevs[0][i][j] / len(self.jpgArrayResults[i][j])),means[0][i][j] + .95 * (stddevs[0][i][j] / len(self.jpgArrayResults[i][j])))
-        jpg2000CI[i][j] = (means[1][i][j] - .95 * (stddevs[1][i][j] / len(self.jpg2000ArrayResults[i][j])),means[1][i][j] + .95 * (stddevs[1][i][j] / len(self.jpg2000ArrayResults[i][j])))
-        av1CI[i][j]     = (means[2][i][j] - .95 * (stddevs[2][i][j] / len(self.av1ArrayResults[i][j])),means[2][i][j] + .95 * (stddevs[2][i][j] / len(self.av1ArrayResults[i][j])))
+        jpgCI[i][j]     = (
+          means[0][i][j] - (st.t.ppf(1 - 0.05 / 2,len(self.jpgArrayResults[i][j]) - 1) * (stddevs[0][i][j] / math.sqrt(len(self.jpgArrayResults[i][j])))),
+          means[0][i][j] + (st.t.ppf(1 - 0.05 / 2,len(self.jpgArrayResults[i][j]) - 1) * (stddevs[0][i][j] / math.sqrt(len(self.jpgArrayResults[i][j]))))
+        )
+        jpg2000CI[i][j] = (
+          means[1][i][j] - (st.t.ppf(1 - 0.05 / 2,len(self.jpg2000ArrayResults[i][j]) - 1) * (stddevs[1][i][j] / math.sqrt(len(self.jpg2000ArrayResults[i][j])))),
+          means[1][i][j] + (st.t.ppf(1 - 0.05 / 2,len(self.jpg2000ArrayResults[i][j]) - 1) * (stddevs[1][i][j] / math.sqrt(len(self.jpg2000ArrayResults[i][j]))))
+        )
+        av1CI[i][j]     = (
+          means[2][i][j] - (st.t.ppf(1 - 0.05 / 2,len(self.av1ArrayResults[i][j]) - 1) * (stddevs[2][i][j] / math.sqrt(len(self.av1ArrayResults[i][j])))),
+          means[2][i][j] + (st.t.ppf(1 - 0.05 / 2,len(self.av1ArrayResults[i][j]) - 1) * (stddevs[2][i][j] / math.sqrt(len(self.av1ArrayResults[i][j]))))
+        )
     return (jpgCI,jpg2000CI,av1CI)
   
   def getConfidenceIntervalsOutlier(self,value):
@@ -90,9 +100,18 @@ class MOS:
     stddevs = self.getStddevs()
     for i in range(5):
       for j in range(4):
-        jpgCI.values.T[i][j]     = (means[0][i][j] - .95 * (stddevs[0][i][j] / len(self.jpgArrayResults[i][j])),means[0][i][j] + .95 * (stddevs[0][i][j] / len(self.jpgArrayResults[i][j])))
-        jpg2000CI.values.T[i][j] = (means[1][i][j] - .95 * (stddevs[1][i][j] / len(self.jpg2000ArrayResults[i][j])),means[1][i][j] + .95 * (stddevs[1][i][j] / len(self.jpg2000ArrayResults[i][j])))
-        av1CI.values.T[i][j]     = (means[2][i][j] - .95 * (stddevs[2][i][j] / len(self.av1ArrayResults[i][j])),means[2][i][j] + .95 * (stddevs[2][i][j] / len(self.av1ArrayResults[i][j])))
+        jpgCI.values.T[i][j]     = (
+          means[0][i][j] - (st.t.ppf(1 - 0.05 / 2,len(self.jpgArrayResults[i][j]) - 1) * (stddevs[0][i][j] / math.sqrt(len(self.jpgArrayResults[i][j])))),
+          means[0][i][j] + (st.t.ppf(1 - 0.05 / 2,len(self.jpgArrayResults[i][j]) - 1) * (stddevs[0][i][j] / math.sqrt(len(self.jpgArrayResults[i][j]))))
+        )
+        jpg2000CI.values.T[i][j] = (
+          means[1][i][j] - (st.t.ppf(1 - 0.05 / 2,len(self.jpg2000ArrayResults[i][j]) - 1) * (stddevs[1][i][j] / math.sqrt(len(self.jpg2000ArrayResults[i][j])))),
+          means[1][i][j] + (st.t.ppf(1 - 0.05 / 2,len(self.jpg2000ArrayResults[i][j]) - 1) * (stddevs[1][i][j] / math.sqrt(len(self.jpg2000ArrayResults[i][j]))))
+        )
+        av1CI.values.T[i][j]     = (
+          means[2][i][j] - (st.t.ppf(1 - 0.05 / 2,len(self.av1ArrayResults[i][j]) - 1) * (stddevs[2][i][j] / math.sqrt(len(self.av1ArrayResults[i][j])))),
+          means[2][i][j] + (st.t.ppf(1 - 0.05 / 2,len(self.av1ArrayResults[i][j]) - 1) * (stddevs[2][i][j] / math.sqrt(len(self.av1ArrayResults[i][j]))))
+        )
     return [jpgCI,jpg2000CI,av1CI]
 
   def printResultsArray(self,threeDArray):
