@@ -7,14 +7,10 @@ import cv2
 from mos import MOS 
 
 
-# Auxiliary functions
-def create_dir(objective_metrics):
+# ======================================= Auxiliary functions =======================================
+def create_dir():
     if not os.path.exists('graphs'):
-        os.mkdir('graphs')
-        for metric in objective_metrics:
-            os.mkdir(f'graphs/{metric}')
-    
-        os.mkdir('graphs/MOS')
+        os.mkdir('graphs')    
         
 def get_bpp(img_path):
     resolution = 563000
@@ -37,26 +33,28 @@ def get_bitrate_values(image_index):
         
         # JPG2000
         X_t[2].append(get_bpp(f'images/JPG2000/bitrate-{i+1}/{int(image_index[-1])}.{codec_list["JPG2000"]}'))
-        
+   
     return X_t
 
-
-# Objective Metrics                   
-def create_graph(file_path, results_list, codecs):
+# ======================================= Objective Metrics =======================================                   
+def plot_objective(file_path, results_list, codecs):
     # Reset plot
     plt.clf()
 
-    # Go through every image
+    # Iterate images
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20,7))
     for j in range(len(results_list)):
         X = get_bitrate_values(f'Image{j+1}')
         for i,codec_results in enumerate(results_list[j]):
+            # First row first column
             if j == 0:
                 axes[0][j].plot(X[i], codec_results, label=codecs[i])
                 axes[0][j].set_title(f"image {j + 1}")
+            # First row
             elif j < 3:
                 axes[0][j].plot(X[i], codec_results, label='_nolegend_')
                 axes[0][j].set_title(f"image {j + 1}")
+            # Second row
             else: 
                 axes[1][j - 3].plot(X[i], codec_results, label='_nolegend_')
                 axes[1][j - 3].set_title(f"image {j + 1}")
@@ -71,9 +69,8 @@ def create_graph(file_path, results_list, codecs):
 def create_objective_graphs():
     # Get the objective evaluation metrics results
     objective_metrics = os.listdir('objective_results')
-    codecs_dir = os.listdir(f'objective_results/{objective_metrics[0]}')
-    codecs = [codec.split('-')[0] for codec in codecs_dir]
-    create_dir(objective_metrics)
+    codecs_dir = os.listdir(f'objective_results/{objective_metrics[0]}') # ['AV1-Results.csv', 'JPG-Results.csv', 'JPG2000-Results.csv']
+    codecs = [codec.split('-')[0] for codec in codecs_dir] # ['AV1', 'JPG', 'JPG2000']
 
     for metric in tqdm(objective_metrics,desc='Metrics'):
         # Each csv represents a codec
@@ -88,11 +85,10 @@ def create_objective_graphs():
             for codec_df in df_list:
                 image_results.append(list(codec_df[f'Image {i+1}'])) # This list contains the bitrates values for each codec
             img_all_results.append(image_results)
-        create_graph(f'graphs/{metric}', img_all_results, codecs)
+        plot_objective(f'graphs/{metric}', img_all_results, codecs)
             
-
-# MOS graphs
-def create_graph_mos(file_path, results_list, confidence_intervals, codecs):
+# ======================================= MOS metric =======================================
+def plot_mos(file_path, results_list, confidence_intervals, codecs):
     # Reset plot
     plt.clf()
     
@@ -100,25 +96,33 @@ def create_graph_mos(file_path, results_list, confidence_intervals, codecs):
     marker_list = ['o', 'x', '^']
     
     fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20,7))
+    print()
+
+    # Iterate images
     for j in range(len(results_list)):
         X = get_bitrate_values(f'Image{j+1}')
         X = [X[0], X[2], X[1]]
+
+        # Iterate codecs
         for i,codec_results in enumerate(results_list[j]):
             # Plot the results with error bars for the confidence intervals            
             yerr = np.array(confidence_intervals[j][i]).reshape(2, -1)
+
+            # First row first column
             if j == 0:
                 axes[0][j].errorbar(X[i], codec_results, yerr=yerr, label=codecs[i], 
                         marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
                 axes[0][j].set_title(f"image {j + 1}")
+            # First row
             elif j < 3:
                 axes[0][j].errorbar(X[i], codec_results, yerr=yerr, label='_nolegend_', 
                         marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
                 axes[0][j].set_title(f"image {j + 1}")
+            # Second row
             else: 
                 axes[1][j - 3].errorbar(X[i], codec_results, yerr=yerr, label='_nolegend_', 
                         marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
                 axes[1][j - 3].set_title(f"image {j + 1}")
-
     
     # plt.subplots_adjust(wspace=0, hspace=0)
     fig.suptitle('MOS results', fontsize=26)
@@ -130,16 +134,18 @@ def create_graph_mos(file_path, results_list, confidence_intervals, codecs):
 
 def create_mos_graphs():
     # Get the mos evaluation metrics results
-    codec_dir = os.listdir('mos_results')
-    df_list = [pd.read_csv(f'mos_results/{codec}', index_col=0)[:-1] for codec in codec_dir]
+    codec_dir = os.listdir('mos_results') # ['av1Results.csv', 'jpg2000Results.csv', 'jpgResults.csv']
+    df_list = [pd.read_csv(f'mos_results/{codec}', index_col=0)[:-1] for codec in codec_dir] # Dataframes: [AV1, JPEG2000, JPEG]
+    # Get the confidence intervals
     mos_c = MOS()
-    ci = mos_c.getConfidenceIntervals_dataframe()[::-1]
-    codecs = [codec.split('Results')[0].upper() for codec in codec_dir]
+    ci = mos_c.getConfidenceIntervals_dataframe()[::-1] # Dataframes: [AV1, JPEG2000, JPEG]
+    codecs = [codec.split('Results')[0].upper() for codec in codec_dir] # AV1, JPG2000, JPG
     
+    # Instanciate lists to plot
     img_all_results = []
     ci_all_results = []
     
-    # For each image
+    # Iterate Images (Columns)
     for i in tqdm(range(len(df_list[0].columns)), desc='Images'):
         image_results = []
         confidence_intervals = []
@@ -147,7 +153,11 @@ def create_mos_graphs():
         Each image_results is an image;
         Each list inside image_result is a codec
         Each value inside the list that is inside the list is a bitrate value, in ascending order, the last being the reference value
+
+        img_all_results: [[[codec j - Image i+1]]] e.g., [[[AV1-Image1-bitrate1, AV1-Image1-bitrate2,...], [JPEG2000-Image1-bitrate1, ...], ...], [[AV1-Image2-bitrate1, ...], [JPEG2000-Image1-bitrate1], ...]] (Outside list:Images, Middle list:Codec, Inside list: Bitrates)
+        ci_all_results: [[[codec j - Image i+1]]] same as img_all_results
         '''
+        # Iterate codecs
         for j in range(len(df_list)):
             image_results.append(list(df_list[j][f'Image {i+1}'])) # This list contains the bitrates values for each codec
             confidence_intervals.append(list(ci[j][f'Image {i+1}'])) # This list contains the bitrates values for each codec
@@ -155,10 +165,11 @@ def create_mos_graphs():
         img_all_results.append(image_results)
         ci_all_results.append(confidence_intervals)
         
-    create_graph_mos(f'graphs/MOS', img_all_results, ci_all_results, codecs)
-    
+    plot_mos(f'graphs/MOS', img_all_results, ci_all_results, codecs)
 
+#======================================= Main =======================================
 if __name__ == '__main__':    
+    create_dir()
     print("Generating graphs for objective evaluation")
     create_objective_graphs()
     print('\n__________________________________________\n')
