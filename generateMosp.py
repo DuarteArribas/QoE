@@ -4,19 +4,9 @@ import math
 import os
 import pandas as pd
 
-# MOSP functions (iqm == metric result)
-
-# Alternative 1 (Teacher's example)
-# def mosp_function(iqm,a,b,c):
-#     return a / (1 + np.exp(-b * (iqm - c)))    
-
-# Alternative 2
+# MOSP function (iqm == metric result)
 def mosp_function(iqm,a,b,c,d):
     return a * iqm**3 + b * iqm**2 + c * iqm + d
-
-# Alternative 3
-# def mosp_function(iqm,a,b,c,d):
-#     return a + b * np.exp(-c * iqm) + d * iqm
 
 # Opens the three csvs and makes a 1 dimensional list out of them
 # Basically this organizes the dataframes data in a 1 dimensional list 
@@ -48,8 +38,7 @@ def generate_mosp(objective_metric_values, mos_values, metric_name):
         # Iterate the whole dataframe and get its MOSp value
         for y in range(len(objective_df.values)):
             for x in range(len(objective_df.values[0])):
-                mosp_df.values[y][x] = round(mosp_function(objective_df.values[y][x], popt[0], popt[1], popt[2], popt[3]), 3) # <- For alternative 3
-                # mosp_df.values[y][x] = round(mosp_function(objective_df.values[y][x], popt[0], popt[1], popt[2]), 3) # <- For alternatives 1 and 2
+                mosp_df.values[y][x] = round(mosp_function(objective_df.values[y][x], popt[0], popt[1], popt[2], popt[3]), 3)
         
         mosp_df.to_csv(f'mosp_results/{metric_name}/{csv_list[i]}')
 
