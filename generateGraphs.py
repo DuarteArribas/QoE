@@ -42,25 +42,31 @@ def plot_objective(file_path, results_list, codecs):
     plt.clf()
 
     # Iterate images
-    fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20,7))
+    fig, axes = plt.subplots(nrows=3, ncols=2, figsize=(29,15))
+    for ax in axes.flat:
+      ax.grid(True)
     for j in range(len(results_list)):
         X = get_bitrate_values(f'Image{j+1}')
         for i,codec_results in enumerate(results_list[j]):
             # First row first column
             if j == 0:
-                axes[0][j].plot(X[i], codec_results, label=codecs[i])
-                axes[0][j].set_title(f"image {j + 1}")
-            # First row
-            elif j < 3:
-                axes[0][j].plot(X[i], codec_results, label='_nolegend_')
-                axes[0][j].set_title(f"image {j + 1}")
-            # Second row
-            else: 
-                axes[1][j - 3].plot(X[i], codec_results, label='_nolegend_')
-                axes[1][j - 3].set_title(f"image {j + 1}")
+                axes[0][0].plot(X[i], codec_results, label=codecs[i])
+                axes[0][0].set_title(f"image {j + 1}")
+            elif j == 1:
+                axes[0][1].plot(X[i], codec_results, label='_nolegend_')
+                axes[0][1].set_title(f"image {j + 1}")
+            elif j == 2:
+                axes[1][0].plot(X[i], codec_results, label='_nolegend_')
+                axes[1][0].set_title(f"image {j + 1}")
+            elif j == 3:
+                axes[1][1].plot(X[i], codec_results, label='_nolegend_')
+                axes[1][1].set_title(f"image {j + 1}")
+            elif j == 4:
+                axes[2][0].plot(X[i], codec_results, label='_nolegend_')
+                axes[2][0].set_title(f"image {j + 1}")
 
     fig.suptitle(f"{file_path.split('/')[-1]} results", fontsize=26)
-    fig.delaxes(axes[1][2])
+    fig.delaxes(axes[2][1])
     fig.text(0.5, 0.04, 'Bitrate', ha='center', va='center', fontsize=20)
     fig.text(0.06, 0.5, f"{file_path.split('/')[-1]} score", ha='center', va='center', rotation='vertical', fontsize=20)
     fig.legend(fontsize=16)
@@ -94,8 +100,12 @@ def plot_mos(file_path, results_list, confidence_intervals, codecs):
     
     # Go through every image
     marker_list = ['o', 'x', '^']
+    fig, axes = plt.subplots(nrows=3, ncols=2, figsize=(29,15))
     
-    fig, axes = plt.subplots(nrows=2, ncols=3, figsize=(20,7))
+   
+    # Add grid to plot
+    for ax in axes.flat:
+      ax.grid(True)
     print()
 
     # Iterate images
@@ -110,26 +120,36 @@ def plot_mos(file_path, results_list, confidence_intervals, codecs):
 
             # First row first column
             if j == 0:
-                axes[0][j].errorbar(X[i], codec_results, yerr=yerr, label=codecs[i], 
+                axes[0][0].errorbar(X[i], codec_results, yerr=yerr, label=codecs[i], 
                         marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
-                axes[0][j].set_title(f"image {j + 1}")
-            # First row
-            elif j < 3:
-                axes[0][j].errorbar(X[i], codec_results, yerr=yerr, label='_nolegend_', 
+                axes[0][0].set_title(f"image {j + 1}")
+            # First row second column
+            elif j == 1:
+                axes[0][1].errorbar(X[i], codec_results, yerr=yerr, label='_nolegend_', 
                         marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
-                axes[0][j].set_title(f"image {j + 1}")
-            # Second row
-            else: 
-                axes[1][j - 3].errorbar(X[i], codec_results, yerr=yerr, label='_nolegend_', 
+                axes[0][1].set_title(f"image {j + 1}")
+            # Second row first column
+            elif j == 2:
+                axes[1][0].errorbar(X[i], codec_results, yerr=yerr, label='_nolegend_', 
                         marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
-                axes[1][j - 3].set_title(f"image {j + 1}")
+                axes[1][0].set_title(f"image {j + 1}")
+            elif j == 3:
+                axes[1][1].errorbar(X[i], codec_results, yerr=yerr, label='_nolegend_', 
+                        marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
+                axes[1][1].set_title(f"image {j + 1}")
+            # Third row first column
+            elif j == 4:
+                axes[2][0].errorbar(X[i], codec_results, yerr=yerr, label='_nolegend_', 
+                        marker=marker_list[i], capsize=5, capthick=2, alpha=0.7, linestyle='')
+                axes[2][0].set_title(f"image {j + 1}")            
     
     # plt.subplots_adjust(wspace=0, hspace=0)
     fig.suptitle('MOS results', fontsize=26)
-    fig.delaxes(axes[1][2])
+    fig.delaxes(axes[2][1])
     fig.text(0.5, 0.04, 'Bitrate', ha='center', va='center', fontsize=20)
     fig.text(0.06, 0.5, 'MOS score', ha='center', va='center', rotation='vertical', fontsize=20)
     fig.legend(fontsize=16)
+    
     fig.savefig(file_path)
 
 def create_mos_graphs():
